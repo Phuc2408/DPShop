@@ -1,6 +1,15 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users'); 
+const { OAuth2Client } = require('google-auth-library');
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../../.env') }); 
+const googleClient = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_SECRET_ID,
+    'postmessage' 
+);
 
 const authController = {
     registerUser: async (req, res) => {
@@ -39,6 +48,32 @@ const authController = {
         token: token,
         user: { id: user.id, fullName: user.full_name, email: user.email }
     });
+    },
+
+    exchangeCodeForToken: async (req, res, next) => {    
+        if (!req.body) {
+            const errorMessage = "req.body is undefined. This is likely because the express.json() middleware is missing or used after the router.";
+            console.error(errorMessage);
+            return res.status(500).json({ message: "Server configuration error: Missing JSON body parser." });
+        }
+        const { code } = req.body;
+        if (!code) {
+        return next();
+        }
+        try {
+            const { tokens } = await googleClient.getToken(code);
+            const idToken = tokens.id_token;
+
+            if (!idToken) {
+                return res.status(400).json({ message: 'Failed to retrieve ID token from Google.' });
+            }
+            req.body.id_token = idToken;
+            return next();
+        }
+        catch (error) {
+            console.error("Error exchanging code for token:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
     }
 }
 module.exports = authController;

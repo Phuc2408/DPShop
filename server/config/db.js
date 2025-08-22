@@ -1,7 +1,8 @@
-require('dotenv').config();
 const mongoose = require('mongoose');
 const { Pool } = require('pg')
-
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../../.env') }); 
 //PostgreSQL connection
 const pgPool = new Pool({
     connectionString: process.env.POSTGRES_URL,

@@ -1,19 +1,19 @@
 const express = require('express')
 const { connectMongoDB } = require('./config/db.js'); 
-const api_Routes = require('./routes/api/index.js');
 const passport = require('passport'); 
 const app = express()
 const cors = require('cors')
-const corsOption = {
-  origin: ['http://localhost:5173'],
-};
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 require('./config/passport.js');
 
 port = 5000;
 
 //Middleware
-app.use(cors(corsOption));
+app.use(cors());
 app.use(express.json());
+const api_Routes = require('./routes/api/index.js');
 app.use(passport.initialize()); 
 
 //Database connection
@@ -27,3 +27,4 @@ app.listen(port, () => {
 })
 
 module.exports = app
+

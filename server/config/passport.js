@@ -1,11 +1,15 @@
 const passport = require('passport');
 const FacebookTokenStrategy = require('passport-facebook-token');
-const GoogleTokenStrategy = require('passport-google-oauth-token');
+const CustomStrategy = require('passport-custom').Strategy;
+const { OAuth2Client } = require('google-auth-library');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../../.env') }); 
 
 const User = require('../models/Users'); 
-require('dotenv').config();
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 passport.use(new LocalStrategy(
     {    
@@ -68,13 +72,34 @@ const socialLogin = async (provider, profile, done) => {
     }
 }
 
-passport.use(new GoogleTokenStrategy(
-    {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_SECRET_ID
-    },
-    async (accessToken, refreshToken, profile, done) => {
-        socialLogin('google', profile, done);
+passport.use('google-token', new CustomStrategy(
+    async (req, done) => {
+        try {
+            const idToken = req.body.id_token;
+
+            if (!idToken) {
+                return done(null, false, { message: 'No ID token provided from client' });
+            }
+
+            const ticket = await googleClient.verifyIdToken({
+                idToken: idToken,
+                audience: process.env.GOOGLE_CLIENT_ID, 
+            });
+
+            const payload = ticket.getPayload();
+
+            const profile = {
+                id: payload.sub, 
+                displayName: payload.name,
+                emails: [{ value: payload.email }],
+            };
+
+            return socialLogin('google', profile, done);
+
+        } catch (error) {
+            console.error("Error in Google CustomStrategy (verifyIdToken):", error.message);
+            return done(error, false);
+        }
     }
 ));
 

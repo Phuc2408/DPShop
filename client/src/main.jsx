@@ -7,9 +7,11 @@ import './index.css'
 import {GoogleOAuthProvider} from '@react-oauth/google';
 import App from './App.jsx'
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId="727432135176-0n0k6emjtgroadsmaip5020nikc2cabt.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={googleClientId}>
       <App />
     </GoogleOAuthProvider>
   </StrictMode>,

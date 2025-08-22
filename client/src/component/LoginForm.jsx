@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook } from 'react-icons/fa';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from '@react-oauth/google';
 export default function LoginForm() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
     const handleSubmit = async(event) => {
         event.preventDefault();
         const userData = {
@@ -13,7 +14,7 @@ export default function LoginForm() {
             password: password
         };
         try {
-            const apiUrl = 'http://localhost:5000/api/auth/login';
+            const apiUrl = `${API_BASE_URL}/api/auth/login`;
             console.log("Sending user data:", userData);
             const response= await fetch(apiUrl, {
                 method: 'POST',
@@ -31,53 +32,47 @@ export default function LoginForm() {
             const data = await response.json();
             console.log("User successfully log in:", data);
             alert("Đang nhập thành công!");
+            navigate('/');
         }
         catch (error) {
             console.error("Error during login:", error);
         }
     }
     const handleGoogleLogin = useGoogleLogin({
-        onSuccess: tokenResponse => {
-            // tokenResponse.access_token chứa token để xác thực với backend
-            console.log('Google login success:', tokenResponse);
-            const accessToken = tokenResponse.access_token;
-
-            // **BẮT BUỘC**: Gửi accessToken này về server của bạn để xác thực,
-            // lấy thông tin người dùng và tạo phiên đăng nhập an toàn.
-            // Ví dụ:
-            // fetch('/api/auth/google', {
-            //   method: 'POST',
-            //   headers: { 'Authorization': `Bearer ${accessToken}` }
-            // });
+        flow: 'auth-code',
+        onSuccess: async tokenResponse => {
+            console.log('Google login success:', tokenResponse.code);
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: tokenResponse.code }),
+                });
+                if (!response.ok) {
+                    const errorData = response.json();
+                    console.error("Error:", errorData.message);
+                    alert(errorData.message);
+                    return;
+                }
+                const data = await response.json();
+                localStorage.setItem('user', JSON.stringify({
+                    token: data.token,
+                    user: data.user
+                }
+                ));
+                navigate('/');
+            }
+            catch (error) {
+                console.error("Error during Google login:", error);
+            }
         },
         onError: error => {
             console.log('Google login failed:', error);
         },
     });
-     const handleFacebookLogin = () => {
-        // Kiểm tra xem SDK đã tải xong chưa (đối tượng FB đã tồn tại trên window)
-        if (window.FB) {
-            window.FB.login(function(response) {
-                if (response.authResponse) {
-                    console.log('Facebook login success:', response.authResponse);
-                    const { accessToken } = response.authResponse;
-
-                    // **BẮT BUỘC**: Gửi accessToken này về server của bạn để
-                    // xác thực và hoàn tất quá trình đăng nhập.
-                    // Ví dụ:
-                    // fetch('/api/auth/facebook', {
-                    //   method: 'POST',
-                    //   body: JSON.stringify({ accessToken }),
-                    // });
-
-                } else {
-                    console.log('User cancelled login or did not fully authorize.');
-                }
-            }, { scope: 'email,public_profile' }); // Các quyền bạn muốn lấy từ người dùng
-        } else {
-            alert("Chức năng đăng nhập Facebook đang được tải, vui lòng thử lại sau giây lát.");
-        }
-    }
+     
     return (
         <div className="w-[500px] mx-auto mt-4 border p-8 rounded-lg shadow">
             <h2 className="text-[#9F8A46] font-bold text-2xl mb-1">ĐĂNG NHẬP</h2>
@@ -116,14 +111,6 @@ export default function LoginForm() {
                 >
                     <FcGoogle className="w-6 h-6 mr-3" />
                     <span className="font-semibold text-gray-700">Đăng nhập với Google</span>
-                </button>
-
-                <button
-                    onClick={handleFacebookLogin}
-                    className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                    <FaFacebook className="w-6 h-6 mr-3 text-[#1877F2]" />
-                    <span className="font-semibold text-gray-700">Đăng nhập với Facebook</span>
                 </button>
             </div>
         </div>

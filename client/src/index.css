@@ -1,20 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 body {
   font-family: 'Noto', sans-serif;
 }
+
 .auth-links-font {
   font-family: 'Noto Sans', sans-serif !important;
 }
+
+.no-scroll {
+  overflow: hidden;
+}
+
 @import "tailwindcss";
+
 /* Tùy chỉnh các class của Swiper */
 @layer components {
+
   /* Tùy chỉnh mũi tên */
   .swiper-button-next,
   .swiper-button-prev {
     /* Dùng @apply để áp dụng các class utility của Tailwind */
     @apply text-white w-8 h-8 md:w-12 md:h-12;
   }
-  
+
   /* Tùy chỉnh màu sắc thực tế của icon mũi tên (SVG) */
   .swiper-button-next::after,
   .swiper-button-prev::after {
@@ -25,13 +34,13 @@ body {
   .swiper-pagination-bullet {
     @apply w-3 h-3 bg-gray-400 opacity-100;
   }
-  
+
   /* Tùy chỉnh dấu chấm của slide đang active */
   .swiper-pagination-bullet-active {
     @apply bg-white;
   }
 }
+
 :root {
   --swiper-navigation-color: gray;
 }
-

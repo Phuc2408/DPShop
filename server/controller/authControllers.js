@@ -1,19 +1,19 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/Users'); 
+const User = require('../models/Users');
 const { OAuth2Client } = require('google-auth-library');
 const dotenv = require('dotenv');
 const path = require('path');
-dotenv.config({ path: path.resolve(__dirname, '../../.env') }); 
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const googleClient = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_SECRET_ID,
-    'postmessage' 
+    'postmessage'
 );
 
 const authController = {
     registerUser: async (req, res) => {
-        try { 
+        try {
             const { FirstName, LastName, dayOfBirth, email, phoneNumber, password } = req.body;
             const fullName = `${FirstName} ${LastName}`;
             const existingUser = await User.findByEmail(email);
@@ -40,17 +40,17 @@ const authController = {
         }
     },
 
-    loginCallback: (req, res) => { 
+    loginCallback: (req, res) => {
         const user = req.user;
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({
-        message: "Đăng nhập thành công!",
-        token: token,
-        user: { id: user.id, fullName: user.full_name, email: user.email }
-    });
+            message: "Đăng nhập thành công!",
+            token: token,
+            user: { id: user.id, fullName: user.full_name, email: user.email }
+        });
     },
 
-    exchangeCodeForToken: async (req, res, next) => {    
+    exchangeCodeForToken: async (req, res, next) => {
         if (!req.body) {
             const errorMessage = "req.body is undefined. This is likely because the express.json() middleware is missing or used after the router.";
             console.error(errorMessage);
@@ -58,7 +58,7 @@ const authController = {
         }
         const { code } = req.body;
         if (!code) {
-        return next();
+            return next();
         }
         try {
             const { tokens } = await googleClient.getToken(code);

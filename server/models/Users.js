@@ -49,7 +49,7 @@ async function findByFacebookId(providerId) {
     }
 }
 
-async function updateSocialId(userId, provider, providerId) { 
+async function updateSocialId(userId, provider, providerId) {
     try {
         let column = '';
         if (provider === 'google') {

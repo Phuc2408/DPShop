@@ -6,7 +6,7 @@ import ProductCard from "./ProductCard";
 export default function ProductGrid({ products }) {
     return (
         <>
-        <style>
+            <style>
                 {`
                     .best-selling-swiper .swiper-button-prev,
                     .best-selling-swiper .swiper-button-next {
@@ -18,21 +18,21 @@ export default function ProductGrid({ products }) {
                 `}
             </style>
 
-        <div className="relative">
-            <Swiper
-                modules={[Navigation]}
-                slidesPerView={4}
-                spaceBetween={24}
-                navigation
-                className="mySwiper best-selling-swiper h-full"
-            >
-                {products.map(product => (
-                    <SwiperSlide key={product.id}>
-                        <ProductCard product={product} />
-                    </SwiperSlide>
-                ))}
-            </Swiper>
-        </div>
+            <div className="relative">
+                <Swiper
+                    modules={[Navigation]}
+                    slidesPerView={4}
+                    spaceBetween={24}
+                    navigation
+                    className="mySwiper best-selling-swiper h-full"
+                >
+                    {products.map(product => (
+                        <SwiperSlide key={product.id}>
+                            <ProductCard product={product} />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            </div>
         </>
     );
 }

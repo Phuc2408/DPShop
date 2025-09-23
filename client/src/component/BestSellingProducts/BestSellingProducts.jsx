@@ -9,11 +9,11 @@ export default function BestSellingProducts() {
     })
     return (
         <>
-        <h2 className=" text-[#9F8A46] text-2xl font-bold mb-1">
-            Nổi bật
+            <h2 className=" text-[#9F8A46] text-2xl font-bold mb-1">
+                Nổi bật
             </h2>
-        <BestSellingTabs activeTab={activeTab} setActiveTab={setActiveTab}/>
-        <ProductGrid products={sampleProducts}/>
+            <BestSellingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <ProductGrid products={sampleProducts} />
         </>
     );
 }

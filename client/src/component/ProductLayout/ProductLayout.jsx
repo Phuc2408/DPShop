@@ -1,50 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom'; // Thêm hook này
 import ProductGrid from './ProductGrid';
 import Pagination from './ProductPagination';
 // import Filter from './ProductFilter';
-import sampleProducts from '../../../sampledata/sample';
-export default function ProductLayout() {
+
+export default function ProductLayout({ category, sub }) {
     const [products, setProducts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    // const [totalPages, setTotalPages] = useState(0);
+    const [totalCount, setTotalCount] = useState(0);
     const limitPerPage = 64;
 
-    const totalProducts = sampleProducts.length;
-    const totalPages = Math.ceil(totalProducts / limitPerPage);
-    useEffect(() => {
-        // const fetchProducts = async () => {
-        //     try {
-        //         const response = await fetch(`/api/products?page=${currentPage}`);
-        //         const data = await response.json();
-        //         setProducts(data.products);
-        //         setTotalPages(Math.ceil(data.totalCount / limitPerPage));
-        //     } catch (error) {
-        //         console.error('Error fetching products:', error);
-        //     }
-        // }
-        // fetchProducts();
-        const startIndex = (currentPage - 1) * limitPerPage;
-        const endIndex = startIndex + limitPerPage;
-        
-        // Cắt mảng mẫu để lấy sản phẩm của trang hiện tại
-        const displayedProducts = sampleProducts.slice(startIndex, endIndex);
+    // Sử dụng useSearchParams để đọc và ghi tham số URL
+    const [searchParams, setSearchParams] = useSearchParams();
 
-        setProducts(displayedProducts);
-    }, [currentPage]);
-    const handleCurrentPage = (page) => { 
-        setCurrentPage(page);
-        window.scrollTo(0, 0); 
+    // Lấy currentPage từ URL, nếu không có thì mặc định là 1
+    const currentPage = Number(searchParams.get('page')) || 1;
+    const totalPages = Math.max(1, Math.ceil(totalCount / limitPerPage));
+
+    // Chuyển useEffect này thành một useEffect để xử lý việc chuyển trang
+    useEffect(() => {
+        // Reset về trang 1 khi category hoặc sub thay đổi
+        if (Number(searchParams.get('page')) !== 1) {
+            setSearchParams({ page: 1, limit: limitPerPage });
+        }
+    }, [category, sub, setSearchParams, limitPerPage]);
+
+    useEffect(() => {
+        const base = 'http://localhost:5000/api/products';
+        let path = '';
+
+        if (category) {
+            path += `/${category}`;
+        }
+        if (sub) {
+            path += `/${sub}`;
+        }
+
+        const url = `${base}${path}?page=${currentPage}&limit=${limitPerPage}`;
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                setProducts(data.items);
+                setTotalCount(data.total);
+            }
+            catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+        fetchProducts();
+
+    }, [category, sub, currentPage, limitPerPage]);
+
+    // Hàm này bây giờ sẽ cập nhật URL thay vì cập nhật state
+    const handlePageChange = (page) => {
+        setSearchParams({ page: page, limit: limitPerPage });
+        window.scrollTo(0, 0);
     }
+
     return (
         <div>
             {/* <Filter /> */}
             <ProductGrid products={products} />
-            <Pagination 
-                currentPage={currentPage} 
-                totalPages={totalPages} 
-                onPageChange={handleCurrentPage}
+            <Pagination
+                category={category}
+                sub={sub}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
             />
         </div>
     );
 }
-    

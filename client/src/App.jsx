@@ -4,22 +4,24 @@ import Homepage from './page/Homepage'
 import Loginpage from './page/Loginpage';
 import Registerpage from './page/Registerpage';
 import Forgotpw from './page/Forgotpw';
-import Productpage from './page/Productpage';
+import ProductPage from './page/Productpage';
 import Accesoriespage from './page/Accessories';
 
 function App() {
   return (
     <>
-    <BrowserRouter>
-      <Routes>
-          <Route path='/' element={<Homepage />} /> 
-          <Route path='/login' element={<Loginpage />} /> 
-          <Route path='/register' element={<Registerpage />} /> 
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Homepage />} />
+          <Route path='/login' element={<Loginpage />} />
+          <Route path='/register' element={<Registerpage />} />
           <Route path='/forgotpw' element={<Forgotpw />} />
-          <Route path='/products' element={<Productpage />} />
+          <Route path="/products" element={<ProductPage />} />
+          <Route path="/products/:categorySlug" element={<ProductPage />} />
+          <Route path="/products/:categorySlug/:subCategorySlug" element={<ProductPage />} />
           <Route path='/accessories' element={<Accesoriespage />} />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }

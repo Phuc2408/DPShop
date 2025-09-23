@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import sampleProducts from '../../../sampledata/sample';
 import ProductGrid from './ProductGrid';
 import BestSellingTabs from './BestSellingTabs'
 export default function BestSellingProducts() {
@@ -12,7 +13,7 @@ export default function BestSellingProducts() {
                 Nổi bật
             </h2>
             <BestSellingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-            <ProductGrid />
+            <ProductGrid products={sampleProducts} />
         </>
     );
 }

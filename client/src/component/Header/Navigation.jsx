@@ -60,11 +60,11 @@ export default function Navigation() {
   };
 
   const subCategories = {
-    'Guitars': ['Acoustic Guitar', 'Electric Guitar', 'Bass Guitar'],
-    'Synthesizer&Piano': [],
-    'Drums': ['Electric Drum', 'Acoustic Drum'],
-    'Microphones': ['Condenser Mic', 'Dynamic Mic'],
-    'Pedals': ['Acoustic Pedal', 'Electric Pedal', 'Bass Pedal'],
+    'Guitars': ['Acoustic Guitars', 'Electric Guitars', 'Bass Guitars'],
+    'Synthesizer&Piano': ['Synthesizers & Pianos'],
+    'Drums': ['Electric Drum Kits', 'Acoustic Drum Kits'],
+    'Microphones': ['Condenser Microphones', 'Dynamic Microphones'],
+    'Pedals': ['Acoustic Pedals', 'Electric Pedals', 'Bass Pedals'],
     'Phụ kiện': [],
   };
 
@@ -80,7 +80,7 @@ export default function Navigation() {
       setIsSubDrawerOpen(true);
     } else {
       const cat = slugify(category);
-      navigate(`/products/${cat}&page=1&limit=64`);
+      navigate(`/products/${cat}?page=1&limit=64`);
       handleCloseAllDrawers();
     }
   };
@@ -88,7 +88,7 @@ export default function Navigation() {
   const handleSubCategoryClick = (category, sub) => {
     const cat = slugify(category);
     const subcat = slugify(sub);
-    navigate(`/products/${cat}/sub=${subcat}&page=1&limit=64`);
+    navigate(`/products/${cat}/${subcat}?page=1&limit=64`);
     handleCloseAllDrawers();
   };
 

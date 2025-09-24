@@ -18,7 +18,7 @@ function App() {
           <Route path='/forgotpw' element={<Forgotpw />} />
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:categorySlug" element={<ProductPage />} />
-          <Route path="/products/:categorySlug/:subCategorySlug" element={<ProductPage />} />
+          <Route path="/products/:categorySlug/:subSlug" element={<ProductPage />} />
           <Route path='/accessories' element={<Accesoriespage />} />
         </Routes>
       </BrowserRouter>
